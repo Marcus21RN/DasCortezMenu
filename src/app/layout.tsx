@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
-// 1. Importamos el Toaster
 import { Toaster } from "react-hot-toast";
 
 const playfair = Playfair_Display({ 
@@ -27,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <link rel="icon" href="/Logo.png" />
+      </head>
       <body className={`${playfair.variable} ${lato.variable} bg-[#F4F1EA] text-[#1C1C1C]`}>
         <Toaster position="bottom-center" toastOptions={{ duration: 4000 }} />
         {children}

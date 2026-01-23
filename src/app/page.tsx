@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 // Tipos de datos (Interface)
 interface Product {
@@ -53,17 +54,8 @@ export default function MenuPage() {
       {/* --- HEADER / LOGO --- */}
       <header className="mb-12 text-center max-w-2xl mx-auto">
         {/* Espacio para Logo */}
-        <div className="mx-auto w-48 h-24 relative mb-4 flex items-center justify-center">
-           {/* Si tienes el logo, descomenta la línea de Image y borra el h1 */}
-           {/* <Image src="/logo.png" alt="Das Cortez" fill className="object-contain" /> */}
-           
-           {/* Placeholder tipográfico elegante mientras consigues el SVG del logo */}
-           <div className="text-center">
-             <h1 className="font-serif text-4xl tracking-widest font-bold uppercase border-b-2 border-black pb-2 inline-block">
-               Das Cortez
-             </h1>
-             <p className="text-xs tracking-[0.3em] mt-1 uppercase text-stone-600">Cafés Finos</p>
-           </div>
+        <div className="mx-auto w-80 h-48 mb-4 flex items-center justify-center">
+              <Image src="/Das-Cortez-NoBG.png" alt="Das Cortez" width={320} height={192} className="object-contain" priority />           
         </div>
       </header>
 
