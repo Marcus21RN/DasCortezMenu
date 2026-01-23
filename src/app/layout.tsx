@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-// 1. Importamos las fuentes de Google
-import { Playfair_Display, Lato } from "next/font/google"; 
+import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
+// 1. Importamos el Toaster
+import { Toaster } from "react-hot-toast";
 
-// 2. Configuramos las fuentes
 const playfair = Playfair_Display({ 
   subsets: ["latin"],
-  variable: '--font-playfair' // Variable CSS para usar en Tailwind
+  variable: '--font-playfair'
 });
 
 const lato = Lato({ 
@@ -27,8 +27,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      {/* 3. Inyectamos las variables de fuente en el body */}
       <body className={`${playfair.variable} ${lato.variable} bg-[#F4F1EA] text-[#1C1C1C]`}>
+        <Toaster position="bottom-center" toastOptions={{ duration: 4000 }} />
         {children}
       </body>
     </html>
