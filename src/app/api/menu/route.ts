@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import Product from '@/models/product';
 import Category from '@/models/category';
+import { ca } from 'zod/locales';
 
 // CAMBIO 1: Reemplazamos 'force-dynamic' por revalidación por tiempo
 // Esto cachea la respuesta por 60 segundos (ISR)
@@ -11,10 +12,13 @@ export async function GET() {
   try {
     await dbConnect();
 
+    Category;
+
     // CAMBIO 2: Usamos .lean() para consultas de solo lectura (más rápido)
     const products = await Product.find({ available: true })
       .populate('category', 'name slug')
-      .lean(); // .lean() devuelve objetos JS puros, no documentos pesados de Mongoose
+      .lean() // .lean() devuelve objetos JS puros, no documentos pesados de Mongoose
+      .sort({ category: 1 });
 
     type MenuProduct = {
       _id?: string;
@@ -54,10 +58,8 @@ export async function GET() {
     }, {});
 
     // Ordenar categorías (Opcional: podrías definir un orden fijo si quisieras)
-    const response = (Object.values(grouped) as CategoryGroup[]).sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
+    const response = (Object.values(grouped) as CategoryGroup[])
+    
     return NextResponse.json(response);
   } catch (error) {
     console.error(error);

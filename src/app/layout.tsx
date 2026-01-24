@@ -17,7 +17,13 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "Das Cortez - Menú",
   description: "Menú digital de especialidad",
+  icons: {
+    icon: '/Logo.png',
+    shortcut: '/Logo.png',
+    apple: '/Logo.png',
+  },
 };
+
 
 export default function RootLayout({
   children,

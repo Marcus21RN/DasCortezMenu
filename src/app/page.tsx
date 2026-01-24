@@ -39,6 +39,58 @@ export default function MenuPage() {
       .catch((err) => console.error(err));
   }, []);
 
+  // Observa las secciones y actualiza la categoría activa al hacer scroll
+  // - Ajustes: rootMargin aumentado al 50% y thresholds más finos.
+  // - Fallback: si IntersectionObserver no da intersecciones, selecciona
+  //   la sección cuyo centro esté más cerca del centro de la ventana.
+  useEffect(() => {
+    if (menu.length === 0) return;
+
+    const elements = menu
+      .map((m) => document.getElementById(m._id))
+      .filter(Boolean) as HTMLElement[];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length > 0) {
+          const mostVisible = visible.reduce((a, b) =>
+            a.intersectionRatio > b.intersectionRatio ? a : b
+          );
+          setActiveCategory(mostVisible.target.id);
+        } else {
+          // Fallback: elegir la sección más cercana al centro del viewport
+          const viewportCenter = window.innerHeight / 2;
+          let closestId = activeCategory || (elements[0] && elements[0].id) || '';
+          let minDist = Infinity;
+
+          elements.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const elCenter = rect.top + rect.height / 2;
+            const dist = Math.abs(elCenter - viewportCenter);
+            if (dist < minDist) {
+              minDist = dist;
+              closestId = el.id;
+            }
+          });
+
+          if (closestId) setActiveCategory(closestId);
+        }
+      },
+      {
+        root: null,
+        // Considera la parte central de la ventana como punto activo (más amplia)
+        rootMargin: '-50% 0px -50% 0px',
+        // Umbrales más finos para detectar pequeñas apariciones
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [menu, activeCategory]);
+
   // Función para scroll suave
   const scrollToCategory = (id: string) => {
     const element = document.getElementById(id);
