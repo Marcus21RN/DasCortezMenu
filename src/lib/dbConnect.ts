@@ -9,11 +9,6 @@ if (!MONGODB_URI) {
   );
 }
 
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
 declare global {
   var mongoose: {
     conn: mongoose.Mongoose | null;

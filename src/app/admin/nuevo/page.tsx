@@ -1,35 +1,26 @@
-"use client";
-
-import React, { useEffect, useState } from 'react';
+import dbConnect from '@/lib/dbConnect';
+import Category from '@/models/category';
 import ProductForm from '@/components/productForm';
 
-interface Category {
-  _id: string;
-  name: string;
-}
+// Función para limpiar datos de Mongo
+const serializeData = <T,>(data: T): T => {
+  return JSON.parse(JSON.stringify(data)) as T;
+};
 
-export default function NewProductPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function NewProductPage() {
+  await dbConnect();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch('/api/menu');
-        const data = (await res.json()) as Category[];
-        const cats = data.map((c) => ({ _id: c._id, name: c.name }));
-        setCategories(cats);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Obtenemos las categorías directamente del servidor
+  const categoriesDoc = await Category.find({}).lean();
+  const categories = serializeData(categoriesDoc);
 
-    fetchCategories();
-  }, []);
-
-  if (loading) return <div className="p-8 text-center">Cargando...</div>;
-
-  return <ProductForm categories={categories} />;
+  return (
+    <div>
+      <h1 className="text-2xl font-serif font-bold text-stone-800 mb-6 px-1">
+        Nuevo Producto
+      </h1>
+      {/* Pasamos las categorías al formulario. initialData va vacío porque es nuevo. */}
+      <ProductForm categories={categories} />
+    </div>
+  );
 }
