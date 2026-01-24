@@ -42,18 +42,14 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
     available: initialData?.available ?? true,
   });
 
-  // Identificar nombre de categoría actual
   const selectedCategoryName = categories.find(c => c._id === formData.category)?.name || '';
   
-  // Reglas de bloqueo
   const isExtras = selectedCategoryName === 'Extras';
   const isColdBrew = selectedCategoryName === 'Cold Brew';
   const isLocked = isExtras || isColdBrew;
 
   // Limpieza automática ahora se aplica al cambiar la categoría dentro de handleChange
   // (Evita setState síncrono dentro de useEffect para prevenir renders en cascada)
-
-
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -149,20 +145,17 @@ if (formData.drinkType === 'General') {
       
       const method = initialData?._id ? 'PUT' : 'POST';
 
-      // --- CORRECCIÓN CRÍTICA: USAR NULL EN LUGAR DE UNDEFINED ---
       const payload = { ...formData };
       
-      // REGLAS SUPREMAS POR CATEGORÍA
       if (isExtras) {
         payload.drinkType = 'General';
-        payload.priceHot = null; // Envia null para borrar en BD
+        payload.priceHot = null;
         payload.priceCold = null;
       } else if (isColdBrew) {
         payload.drinkType = 'Frio';
-        payload.priceHot = null; // ¡Esto borrará el $55 fantasma!
+        payload.priceHot = null;
         payload.price = null;
       } else {
-        // Reglas normales por tipo
         if (payload.drinkType === 'Frio') {
             payload.priceHot = null;
             payload.price = null;
@@ -170,7 +163,6 @@ if (formData.drinkType === 'General') {
             payload.priceCold = null;
             payload.price = null;
         } else {
-            // Ambos
             payload.price = null;
         }
       }
@@ -214,8 +206,7 @@ if (formData.drinkType === 'General') {
 
       <form onSubmit={handleSubmit} className="bg-white p-6 md:p-8 shadow-xl rounded-xl border border-stone-200">
         <div className="space-y-6">
-          
-          {/* NOMBRE */}
+        
           <div>
             <label className="block text-xs font-bold text-stone-500 uppercase mb-1 ml-1">Nombre del Producto</label>
             <input
@@ -267,7 +258,7 @@ if (formData.drinkType === 'General') {
                   <option value="Frio">Solo Frío</option>
                   
                   {/* Opción General SOLO visible si es Extras */}
-                  {isExtras && <option value="General">General / Comida / Extra</option>}
+                  {isExtras && <option value="General">General / Extra</option>}
                 </select>
                 {!isLocked && (
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-600">
@@ -372,7 +363,7 @@ if (formData.drinkType === 'General') {
           {/* SWITCHES */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <label className="flex items-center justify-between p-4 border border-stone-200 rounded-lg cursor-pointer hover:bg-stone-50 transition-colors">
-              <span className="text-sm font-bold text-stone-700">🌟 Es de Temporada</span>
+              <span className="text-sm font-bold text-stone-700"> Es de Temporada</span>
               <div className="relative inline-flex items-center cursor-pointer">
                 <input 
                   type="checkbox" 
@@ -381,12 +372,12 @@ if (formData.drinkType === 'General') {
                   onChange={handleChange} 
                   className="sr-only peer" 
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-stone-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-stone-800"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-stone-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-stone-800"></div>
               </div>
             </label>
 
             <label className="flex items-center justify-between p-4 border border-stone-200 rounded-lg cursor-pointer hover:bg-stone-50 transition-colors">
-              <span className="text-sm font-bold text-stone-700">✅ Disponible / Activo</span>
+              <span className="text-sm font-bold text-stone-700"> Disponible / Activo</span>
               <div className="relative inline-flex items-center cursor-pointer">
                 <input 
                   type="checkbox" 
@@ -395,7 +386,7 @@ if (formData.drinkType === 'General') {
                   onChange={handleChange} 
                   className="sr-only peer" 
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
               </div>
             </label>
           </div>

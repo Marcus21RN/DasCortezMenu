@@ -1,82 +1,83 @@
-"use client";
-
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import dbConnect from '@/lib/dbConnect';
+import Product from '@/models/product';
+import Category from '@/models/category';
 import ProductForm from '@/components/productForm';
+import { notFound } from 'next/navigation';
+import type { IProduct } from '@/models/product';
+import type { ICategory } from '@/models/category';
 
-// 1. Definimos qué forma tiene una Categoría que viene de la API
-interface ApiCategory {
-  _id: string;
-  name: string;
+const serializeData = <T,>(data: T): T => {
+  return JSON.parse(JSON.stringify(data)) as T;
+};
+
+// CAMBIO 1: Definimos el tipo como una Promesa
+interface Props {
+  params: Promise<{ id: string }>;
 }
 
-// 2. Definimos la forma del producto para el estado initialData
-interface ProductData {
-  _id: string;
+// Tipo local que refleja la forma que espera `ProductForm` (definido en el componente)
+type ProductFormData = {
+  _id?: string;
   name: string;
   description?: string;
-  category: string; // El ID de la categoría
+  category: string;
   drinkType: 'Caliente' | 'Frio' | 'Ambos' | 'General';
-  price?: number;
-  priceHot?: number;
-  priceCold?: number;
+  price?: number | null;
+  priceHot?: number | null;
+  priceCold?: number | null;
   isSeasonal: boolean;
   available: boolean;
-}
+};
 
-// 3. Definimos la categoría simplificada para el select
-interface SimpleCategory {
-  _id: string;
-  name: string;
-}
+export default async function EditProductPage({ params }: Props) {
+  await dbConnect();
 
-export default function EditProductPage() {
-  // useParams puede devolver string o array, forzamos a string para evitar errores
-  const params = useParams();
-  const id = typeof params?.id === 'string' ? params.id : undefined;
+  // CAMBIO 2: Desempaquetamos (await) los params antes de usarlos
+  const { id } = await params;
 
-  const [categories, setCategories] = useState<SimpleCategory[]>([]);
-  
-  // AQUI EL CAMBIO: Ya no es <any>, ahora es <ProductData | null>
-  const [initialData, setInitialData] = useState<ProductData | null>(null);
-  const [loading, setLoading] = useState(true);
+  let product: ProductFormData | undefined;
+  let categories: { _id: string; name: string }[] = [];
+  try {
+    // Usamos 'id' directamente (ya no params.id)
+    const [productDoc, categoriesDoc] = await Promise.all([
+      Product.findById(id).lean(),
+      Category.find({}).lean(),
+    ]);
 
-  useEffect(() => {
-    if (!id) return;
+    if (!productDoc) {
+      return notFound();
+    }
 
-    const fetchData = async () => {
-      try {
-        const [prodRes, catRes] = await Promise.all([
-          fetch(`/api/products/${id}`),
-          fetch('/api/menu'),
-        ]);
+    // Normalizamos datos serializables
+    const rawProduct = serializeData(productDoc) as unknown as IProduct & { _id?: unknown; category?: unknown };
+    const rawCategories = serializeData(categoriesDoc) as unknown as ICategory[];
 
-        if (!prodRes.ok || !catRes.ok) throw new Error("Error al cargar datos");
-
-        const prod: ProductData = await prodRes.json();
-        const cats: ApiCategory[] = await catRes.json(); // Tipamos la respuesta
-
-        setInitialData(prod);
-        
-        // AQUI EL CAMBIO: 'c' ahora es de tipo ApiCategory, ya no necesitamos 'any'
-        setCategories(cats.map((c) => ({ _id: c._id, name: c.name })));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+    // Mapear a la forma que espera ProductForm (asegurando types)
+    product = {
+      _id: rawProduct._id ? String(rawProduct._id) : undefined,
+      name: rawProduct.name,
+      description: rawProduct.description,
+      category: rawProduct.category ? String(rawProduct.category) : '',
+      drinkType: rawProduct.drinkType as ProductFormData['drinkType'],
+      price: rawProduct.price ?? undefined,
+      priceHot: rawProduct.priceHot ?? undefined,
+      priceCold: rawProduct.priceCold ?? undefined,
+      isSeasonal: rawProduct.isSeasonal ?? false,
+      available: rawProduct.available ?? true,
     };
 
-    fetchData();
-  }, [id]);
+    categories = rawCategories.map((c) => ({ _id: c._id ? String(c._id) : '', name: c.name }));
+  } catch (error) {
+    console.error("Error en Edit Page:", error);
+    return <div>Error al cargar el producto.</div>;
+  }
 
-  if (!id) return <div className="p-8 text-center text-red-600">ID de producto inválido</div>;
-  if (loading) return <div className="p-8 text-center text-stone-600">Cargando datos...</div>;
-
-  // Renderizado condicional: Solo mostramos el form si tenemos datos
-  return initialData ? (
-    <ProductForm initialData={initialData} categories={categories} />
-  ) : (
-    <div className="p-8 text-center text-red-600">No se encontró el producto</div>
+  return (
+    <div>
+      <h1 className="text-2xl font-serif font-bold text-stone-800 mb-6 px-1">
+        Editar Producto
+      </h1>
+      <ProductForm initialData={product} categories={categories} />
+    </div>
   );
 }

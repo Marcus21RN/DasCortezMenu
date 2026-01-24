@@ -1,46 +1,66 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
-import Product from '@/models/product.ts';
-import Category from '@/models/category.ts';
+import Product from '@/models/product';
+import Category from '@/models/category';
 
-// Esta instrucción evita que Next.js cachee la respuesta estáticamente en el build.
-// Queremos datos frescos de la BD cada vez (o al menos que se revaliden).
-export const dynamic = 'force-dynamic';
+// CAMBIO 1: Reemplazamos 'force-dynamic' por revalidación por tiempo
+// Esto cachea la respuesta por 60 segundos (ISR)
+export const revalidate = 60; 
 
 export async function GET() {
   try {
-    // 1. Conectamos a la BD
     await dbConnect();
 
-    // 2. Traemos todas las categorías ordenadas por el campo 'order' (1, 2, 3...)
-    const categories = await Category.find({}).lean();
+    // CAMBIO 2: Usamos .lean() para consultas de solo lectura (más rápido)
+    const products = await Product.find({ available: true })
+      .populate('category', 'name slug')
+      .lean(); // .lean() devuelve objetos JS puros, no documentos pesados de Mongoose
 
-    // 3. Traemos TODOS los productos activos
-    // Usamos .lean() para obtener objetos JSON puros (más rápido que objetos Mongoose completos)
-    const products = await Product.find({ available: true }).lean();
+    type MenuProduct = {
+      _id?: string;
+      name?: string;
+      price?: number;
+      available?: boolean;
+      category?: {
+        _id?: string;
+        name?: string;
+        slug?: string;
+      } | null;
+      [key: string]: unknown;
+    };
 
-    // 4. "Armamos" el menú (Lógica del Controlador)
-    // Cruzamos los datos: A cada categoría le inyectamos sus productos correspondientes.
-    const menuData = categories.map((category) => {
-      // Filtramos los productos que pertenecen a esta categoría
-      const categoryProducts = products.filter(
-        (product) => product.category.toString() === category._id.toString()
-      );
+    type CategoryGroup = {
+      _id?: string | null;
+      name: string;
+      slug: string;
+      products: MenuProduct[];
+    };
 
-      return {
-        ...category,       // Datos de la categoría (nombre, slug)
-        products: categoryProducts, // Array con sus productos
-      };
-    });
+    const grouped = products.reduce<Record<string, CategoryGroup>>((acc, product: MenuProduct) => {
+      const catName = (product.category?.name as string) || 'Otros';
+      const catSlug = (product.category?.slug as string) || 'otros';
+      const catId = product.category?._id?.toString();
 
-    // 5. Retornamos el JSON estructurado
-    return NextResponse.json(menuData);
+      if (!acc[catName]) {
+        acc[catName] = {
+          _id: catId,
+          name: catName,
+          slug: catSlug,
+          products: [],
+        };
+      }
+      acc[catName].products.push(product);
+      return acc;
+    }, {});
 
-  } catch (error) {
-    console.error('Error al obtener el menú:', error);
-    return NextResponse.json(
-      { error: 'Error interno del servidor al cargar el menú' },
-      { status: 500 }
+    // Ordenar categorías (Opcional: podrías definir un orden fijo si quisieras)
+    const response = (Object.values(grouped) as CategoryGroup[]).sort((a, b) =>
+      a.name.localeCompare(b.name)
     );
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Error al cargar menú' }, { status: 500 });
   }
 }
