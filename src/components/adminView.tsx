@@ -75,7 +75,7 @@ export default function AdminView({ initialProducts }: AdminViewProps) {
           <select 
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="w-full p-2 border border-stone-300 rounded bg-stone-50 focus:border-stone-800 outline-none text-sm"
+            className="w-full p-3 border border-stone-300 rounded-lg bg-stone-50 focus:border-stone-800 outline-none appearance-none text-sm"
           >
             <option value="Todas">Todas las categorías</option>
             {uniqueCategories.map(cat => (
@@ -88,7 +88,7 @@ export default function AdminView({ initialProducts }: AdminViewProps) {
           <select 
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="w-full p-2 border border-stone-300 rounded bg-stone-50 focus:border-stone-800 outline-none text-sm"
+            className="w-full p-3 border border-stone-300 rounded-lg bg-stone-50 focus:border-stone-800 outline-none appearance-none text-sm"
           >
             <option value="Todos">Todos</option>
             <option value="Activos">Solo Activos</option>

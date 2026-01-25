@@ -3,6 +3,7 @@
 import React from "react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AdminLayout({
   children,
@@ -18,8 +19,15 @@ export default function AdminLayout({
             
             {/* Logo / Título del Panel */}
             <div className="flex items-center">
-              <Link href="/admin" className="font-serif text-xl tracking-widest font-bold hover:text-stone-300 transition-colors">
-                DAS CORTEZ | Admin
+              <Link href="/admin" className="flex items-center">
+                <Image
+                  src="/Logo-NOBG.png"
+                  alt="Das Cortez logo"
+                  width={180}
+                  height={48}
+                  className="object-contain"
+                />
+                <span className="sr-only">DAS CORTEZ | Admin</span>
               </Link>
             </div>
 
