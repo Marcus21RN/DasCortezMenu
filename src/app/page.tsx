@@ -220,7 +220,7 @@ export default function MenuPage() {
                       </h3>
                       {product.isSeasonal && (
                         <span className="bg-stone-800 text-[#F4F1EA] text-[0.6rem] px-2 py-0.5 rounded uppercase tracking-wider font-bold shrink-0">
-                          Temp
+                          Temporada
                         </span>
                       )}
                     </div>
