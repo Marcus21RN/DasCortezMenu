@@ -1,10 +1,11 @@
-import mongoose from 'mongoose';
-const { Schema, model, models } = mongoose;
+import mongoose, { Schema, model, models } from 'mongoose';
 
 export interface ICategory {
   _id?: string;
-  name: string;      // Ej: "Bebidas a base de Espresso"
-  slug: string;      // Ej: "bebidas-espresso" (útil para URLs o IDs internos)
+  name: string;
+  slug: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const CategorySchema = new Schema<ICategory>(
@@ -22,9 +23,12 @@ const CategorySchema = new Schema<ICategory>(
       lowercase: true,
     }
   },
+  {
+    timestamps: true,
+    versionKey: false 
+  }
 );
 
-// Evitar error de recompilación en Next.js
 const Category = models.Category || model<ICategory>('Category', CategorySchema);
 
 export default Category;
