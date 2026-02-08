@@ -1,18 +1,17 @@
 import mongoose from 'mongoose';
 const { Schema, model, models } = mongoose;
 
-// Importamos el tipo de bebida solo para validación interna si quieres
 export const DRINK_TYPES = ['Caliente', 'Frio', 'Ambos', 'General'] as const;
 
 export interface IProduct {
   name: string;
   description?: string;
-  // AQUI EL CAMBIO: category ya no es un string, es un ID que apunta a 'Category'
   category: mongoose.Schema.Types.ObjectId; 
   drinkType: typeof DRINK_TYPES[number];
   priceHot?: number;
+  sizeHot?: string;
   priceCold?: number;
-  // price: único usado por categorías como "Extras"
+  sizeCold?: string;
   price?: number;
   isSeasonal?: boolean;
   available: boolean;
@@ -29,10 +28,11 @@ const ProductSchema = new Schema<IProduct>(
       type: String,
       trim: true,
     },
+    
     // REFERENCIA RELACIONAL
     category: {
-      type: Schema.Types.ObjectId, // Guardamos el _id de la categoría
-      ref: 'Category',             // Le decimos a Mongoose: "Este ID búscalo en la colección Category"
+      type: Schema.Types.ObjectId, 
+      ref: 'Category',             
       required: true,
     },
     drinkType: {
@@ -42,7 +42,9 @@ const ProductSchema = new Schema<IProduct>(
     },
     price: { type: Number, min: 0 },
     priceHot: { type: Number, min: 0 },
+    sizeHot: { type: String },
     priceCold: { type: Number, min: 0 },
+    sizeCold: { type: String },
     isSeasonal: { type: Boolean, default: false },
     available: { type: Boolean, default: true }
   },

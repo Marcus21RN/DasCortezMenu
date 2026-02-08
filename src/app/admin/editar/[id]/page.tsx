@@ -24,7 +24,9 @@ type ProductFormData = {
   drinkType: 'Caliente' | 'Frio' | 'Ambos' | 'General';
   price?: number | null;
   priceHot?: number | null;
+    sizeHot?: string;
   priceCold?: number | null;
+    sizeCold?: string;
   isSeasonal: boolean;
   available: boolean;
 };
@@ -61,7 +63,9 @@ export default async function EditProductPage({ params }: Props) {
       drinkType: rawProduct.drinkType as ProductFormData['drinkType'],
       price: rawProduct.price ?? undefined,
       priceHot: rawProduct.priceHot ?? undefined,
+      sizeHot: rawProduct.sizeHot ?? '',
       priceCold: rawProduct.priceCold ?? undefined,
+      sizeCold: rawProduct.sizeCold ?? '',
       isSeasonal: rawProduct.isSeasonal ?? false,
       available: rawProduct.available ?? true,
     };

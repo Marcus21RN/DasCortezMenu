@@ -11,6 +11,9 @@ export const productSchema = z.object({
   price: z.number().min(0).nullable().optional(),
   priceHot: z.number().min(0).nullable().optional(),
   priceCold: z.number().min(0).nullable().optional(),
+  // Tamaños (oz) opcionales — pueden venir como cadena vacía, null o un valor como '12oz'
+  sizeHot: z.string().nullable().optional(),
+  sizeCold: z.string().nullable().optional(),
   
   isSeasonal: z.boolean().optional(),
   available: z.boolean().optional(),

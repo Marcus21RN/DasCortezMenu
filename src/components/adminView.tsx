@@ -150,9 +150,10 @@ export default function AdminView({ initialProducts }: AdminViewProps) {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right align-middle">
-                    <Link 
+                    <Link
                       href={`/admin/editar/${product._id}`}
-                      className="text-stone-500 hover:text-stone-900 font-bold text-xs uppercase tracking-wider border border-stone-300 hover:border-stone-800 px-3 py-1 rounded transition-all"
+                      title={`Editar ${product.name}`}
+                      className="bg-white hover:bg-stone-50 text-stone-900 border border-stone-900 font-bold px-3 py-2 rounded uppercase tracking-wider text-sm transition-all"
                     >
                       Editar
                     </Link>
@@ -191,9 +192,10 @@ export default function AdminView({ initialProducts }: AdminViewProps) {
                )}
             </div>
 
-            <Link 
+            <Link
               href={`/admin/editar/${product._id}`}
-              className="mt-2 text-center w-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold py-2 rounded text-sm transition-colors border border-stone-300"
+              title={`Editar ${product.name}`}
+              className="mt-2 text-center w-full bg-white hover:bg-stone-400 text-stone-900 border border-stone-900 font-bold py-3 rounded text-sm transition-colors"
             >
               Editar Producto
             </Link>

@@ -12,6 +12,8 @@ interface Product {
   priceCold?: number;
   price?: number; 
   drinkType: 'Caliente' | 'Frio' | 'Ambos' | 'General';
+  sizeHot?: string;
+  sizeCold?: string;
   isSeasonal: boolean;
 }
 
@@ -42,13 +44,12 @@ export default function MenuPage() {
       .catch((err) => console.error(err));
   }, []);
 
-  // 2. Intersection Observer (Spy Scroll) - CORREGIDO
+  // 2. Intersection Observer (Spy Scroll)
   useEffect(() => {
     if (loading || menu.length === 0) return;
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
-        // Simplemente verificamos si la sección "toca" la línea invisible definida abajo
         if (entry.isIntersecting) {
           setActiveCategory(entry.target.id);
         }
@@ -56,9 +57,6 @@ export default function MenuPage() {
     };
 
     const observer = new IntersectionObserver(handleIntersection, {
-      // rootMargin define una "línea de disparo" invisible.
-      // -120px arriba: compensa la altura de tu header sticky para que no cambie antes de tiempo.
-      // -50% abajo: significa que la sección se activa cuando pasa de la mitad de la pantalla hacia arriba.
       rootMargin: '-120px 0px -50% 0px', 
       threshold: 0
     });
@@ -107,7 +105,7 @@ export default function MenuPage() {
   return (
     <main className="min-h-screen bg-[#F4F1EA] text-[#1C1C1C] pb-20 flex flex-col relative">
       
-      {/* --- FONDO CON TEXTURA (Opción sutil) --- */}
+      {/* --- FONDO CON TEXTURA --- */}
       {/* Esto simula papel artesanal o ruido, dando calidez sin distraer */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
@@ -254,32 +252,40 @@ export default function MenuPage() {
                     )}
 
                     {product.drinkType === 'Frio' && (
-                      <div className="flex flex-col items-center bg-blue-50/30 border border-blue-100/50 rounded-lg px-2 py-1.5 min-w-16.25">
-                        <span className="text-[9px] text-blue-800/60 font-black uppercase tracking-widest mb-0.5">Frío</span>
-                        <span className="font-bold text-lg text-stone-800">${product.priceCold}</span>
+                      <div className="flex flex-col items-center bg-blue-50/40 border border-blue-100/60 rounded-lg px-3 py-2 min-w-27.5 shadow-sm">
+                        <span className="text-[10px] text-blue-800 font-black uppercase tracking-widest mb-1">Frío</span>
+                        <div className="flex items-baseline gap-3">
+                          <span className="font-bold text-lg text-stone-800">${product.priceCold}</span>
+                          <span className="text-xs text-stone-500">{product.sizeCold ? product.sizeCold.replace('oz',' oz') : '16 oz'}</span>
+                        </div>
                       </div>
                     )}
 
                     {product.drinkType === 'Caliente' && (
-                      <div className="flex flex-col items-center bg-orange-50/30 border border-orange-100/50 rounded-lg px-2 py-1.5 min-w-16.25">
-                        <span className="text-[9px] text-orange-800/60 font-black uppercase tracking-widest mb-0.5">Caliente</span>
-                        <span className="font-bold text-lg text-stone-800">${product.priceHot}</span>
+                      <div className="flex flex-col items-center bg-orange-50/40 border border-orange-100/60 rounded-lg px-3 py-2 min-w-27.5 shadow-sm">
+                        <span className="text-[10px] text-orange-800 font-black uppercase tracking-widest mb-1">Caliente</span>
+                        <div className="flex items-baseline gap-3">
+                          <span className="font-bold text-lg text-stone-800">${product.priceHot}</span>
+                          <span className="text-xs text-stone-500">{product.sizeHot ? product.sizeHot.replace('oz',' oz') : '12 oz'}</span>
+                        </div>
                       </div>
                     )}
 
                     {product.drinkType === 'Ambos' && (
                       <div className="flex gap-2">
-                        <div className="flex flex-col items-center bg-orange-50/30 border border-orange-100/50 rounded-lg px-2 py-1.5 min-w-16.25">
-                           <span className="text-[9px] text-orange-800/60 font-black uppercase tracking-widest mb-0.5">Caliente</span>
-                           <div className="flex items-center gap-1">
-                             <span className="font-bold text-lg text-stone-800 leading-none">${product.priceHot}</span>
-                           </div>
+                        <div className="flex flex-col items-center bg-orange-50/40 border border-orange-100/60 rounded-lg px-3 py-2 min-w-27.5 shadow-sm">
+                          <span className="text-[10px] text-orange-800 font-black uppercase tracking-widest mb-1">Caliente</span>
+                          <div className="flex items-baseline gap-3">
+                            <span className="font-bold text-lg text-stone-800 leading-none">${product.priceHot}</span>
+                            <span className="text-xs text-stone-500">{product.sizeHot ? product.sizeHot.replace('oz',' oz') : '12 oz'}</span>
+                          </div>
                         </div>
                         
-                        <div className="flex flex-col items-center bg-blue-50/30 border border-blue-100/50 rounded-lg px-2 py-1.5 min-w-16.25">
-                           <span className="text-[9px] text-blue-800/60 font-black uppercase tracking-widest mb-0.5">Frío</span>
-                           <div className="flex items-center gap-1">
+                        <div className="flex flex-col items-center bg-blue-50/40 border border-blue-100/60 rounded-lg px-3 py-2 min-w-27.5 shadow-sm">
+                           <span className="text-[10px] text-blue-800 font-black uppercase tracking-widest mb-1">Frío</span>
+                           <div className="flex items-baseline gap-3">
                              <span className="font-bold text-lg text-stone-800 leading-none">${product.priceCold}</span>
+                             <span className="text-xs text-stone-500">{product.sizeCold ? product.sizeCold.replace('oz',' oz') : '16 oz'}</span>
                            </div>
                         </div>
                       </div>
@@ -293,7 +299,7 @@ export default function MenuPage() {
         ))}
       </div>
 
-      {/* --- FOOTER REDISEÑADO (Botones grandes + Sin contraste fuerte) --- */}
+      {/* --- FOOTER --- */}
       <footer className="mt-24 pb-12 px-4 relative z-10">
         <div className="max-w-md mx-auto space-y-4">
           
