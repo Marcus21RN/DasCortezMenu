@@ -326,6 +326,27 @@ export default function MenuPage() {
             <svg className="w-5 h-5 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           </a>
 
+          {/* TIKTOK (Botón Grande) */}
+          <a
+            href="https://www.tiktok.com/@dascortezoficial?is_from_webapp=1&sender_device=pc"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between w-full bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-stone-200 active:scale-95 transition-all group"
+          >
+            <div className="flex items-center gap-4">
+               <div className="p-2 bg-stone-100 rounded-full text-stone-600 group-hover:bg-stone-800 group-hover:text-white transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-tiktok" viewBox="0 0 16 16">
+                    <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/>
+                  </svg>
+               </div>
+               <div className="text-left">
+                  <p className="font-bold text-stone-800 text-sm uppercase tracking-wide">TikTok</p>
+                  <p className="text-xs text-stone-500">dascortezoficial</p>
+               </div>
+            </div>
+            <svg className="w-5 h-5 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          </a>
+
           {/* FACTURACIÓN (Botón Grande) */}
           <a 
             href={`mailto:facturacion@dascortez.com?subject=${encodeURIComponent("Facturación + (tu número de pedido)")}&body=${encodeURIComponent("Para facturar tu compra, te pedimos nos envíes los siguientes datos:\n\nNombre:\nDirección:\nRFC:\nUso CFDI:")}`}
